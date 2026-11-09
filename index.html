@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>HairGuru — AI Hairstyle Try-On</title><script>
+document.documentElement.classList.add("js");
+(function(){function bn(m){if(document.getElementById("err"))return;var b=document.createElement("div");b.id="err";b.style.cssText="position:fixed;bottom:0;left:0;right:0;padding:.8rem 1rem;background:#c0392b;color:#fff;z-index:200;font:14px system-ui;text-align:center;cursor:pointer";b.onclick=function(){b.remove()};b.textContent="\u26a0 "+m+" (tap to dismiss)";(document.body||document.documentElement).appendChild(b)}
+addEventListener("error",function(e){var t=e.target;if(t&&t!==window){var u=t.src||t.href||"";if(u&&!/face_mesh|\/lib\//.test(u))bn("Missing file: "+u.replace(location.origin,""))}else bn("Script error: "+e.message+" ("+String(e.filename).split("/").pop()+":"+e.lineno+")")},true);
+addEventListener("unhandledrejection",function(e){bn("Error: "+((e.reason&&e.reason.message)||e.reason))});
+setTimeout(function(){if(window.__ok)return;document.documentElement.classList.remove("js");var m=[];if(typeof STYLES==="undefined")m.push("styles-data.js");if(typeof drawHair==="undefined")m.push("hair.js");if(typeof generate==="undefined")m.push("ai.js");
+bn("App did not start"+(m.length?" (not loaded: "+m.join(", ")+")":"")+". Open /js/app.js on your site to check that it exists")},2500)})();
+</script><link rel="stylesheet" href="css/style.css"></head>
+<body>
+<div class="blobs"><i></i><i></i><i></i></div>
+<nav><b>HairGuru<span>.</span></b><a href="#try">Try it on</a><a href="#howto">How to use</a></nav>
+<header class="hero">
+  <p class="tag rv">✦ AI hairstyle studio</p>
+  <h1><span><em>Find the cut</em></span><span><em>that fits your</em></span><span><em class="g">face.</em></span></h1>
+  <p class="sub rv">Scan your face, get your shape, jawline and proportions, then preview over 350 styles in 16 colours on yourself.</p>
+  <a class="btn rv" href="#try">Start scan →</a>
+</header>
+<div class="marquee"><div>BUZZ CUT ✦ POMPADOUR ✦ SHAG ✦ CURTAIN BANGS ✦ LONG CURLS ✦ BLUNT BOB ✦ QUIFF ✦ BEACH WAVES ✦ BUZZ CUT ✦ POMPADOUR ✦ SHAG ✦ CURTAIN BANGS ✦ LONG CURLS ✦ BLUNT BOB ✦ QUIFF ✦ BEACH WAVES ✦</div></div>
+<section id="try" class="try">
+  <div class="stage rv">
+    <canvas id="cv" width="640" height="800"></canvas>
+    <video id="cam" playsinline muted hidden></video>
+    <div class="scan"></div>
+    <img id="out" hidden alt="AI result">
+    <div class="views" id="views" hidden><button class="vt on" data-v="front">Front</button><button class="vt" data-v="left">Left</button><button class="vt" data-v="right">Right</button></div>
+    <svg id="guide" class="guide" viewBox="0 0 400 500"><ellipse cx="200" cy="190" rx="88" ry="118"/><line x1="125" y1="165" x2="275" y2="165"/><path d="M30 500C50 380 130 345 200 345C270 345 350 380 370 500"/><text x="200" y="38" text-anchor="middle" font-size="15">Face straight · head in oval · eyes on line</text><text x="200" y="440" text-anchor="middle" font-size="15">Both shoulders inside frame</text></svg>
+    <div class="empty" id="empty">Take a photo or upload one</div>
+    <div class="status" id="status"></div>
+  </div>
+  <aside class="panel rv">
+    <div class="row">
+      <button class="btn" id="camBtn">📷 Camera</button>
+      <button class="btn ghost" id="up">🖼 Upload</button><input type="file" id="file" accept="image/*" hidden>
+      <button class="btn ghost" id="help">📋 Photo guide</button>
+      <button class="btn" id="snap" hidden>● Capture</button>
+    </div>
+    <h3>Face analysis</h3><div id="stats" class="stats"><p class="mute">Waiting for a photo…</p></div>
+    <h3>Photo check</h3><div id="checks" class="stats"><p class="mute">Runs after the scan.</p></div>
+    <h3>Best for you · tap to generate</h3><div id="best" class="chips"><p class="mute">Suggestions appear after the scan.</p></div>
+    <h3>Hair colour</h3><div id="cols" class="cols"></div>
+    <label class="mute"><input type="checkbox" id="qp"> ⚡ Quick preview: instant, no AI (for testing styles)</label>
+    <label class="mute">Hair size <input type="range" id="sz" min=".6" max="1.6" step=".01" value="1"></label><p class="mute">Tip: drag on the photo to nudge the hair.</p>
+    <div class="row"><button class="btn ghost" id="all">🔄 Generate all views</button><button class="btn ghost" id="coll">🧩 Save 3-view collage</button></div>
+    <button class="btn ghost" id="save">⬇ Save preview</button>
+  </aside>
+</section>
+<section class="lib" id="styles">
+  <h2 class="rv">All styles <span id="count"></span></h2>
+  <div class="chips rv" id="flt"></div>
+  <input id="q" class="rv" placeholder="Search: bob, curly, blonde, fade…">
+  <div id="grid" class="grid"></div>
+</section>
+<section class="howto" id="howto">
+  <p class="tag rv">Guide</p>
+  <h2 class="rv">How to use <span class="g">HairGuru</span></h2>
+  <p class="sub rv">From a selfie to your new look in nine steps.</p>
+  <ol class="hsteps">
+    <li class="rv"><span class="n">1</span><div><h4>Read the photo guide</h4><p>Tap <b>📋 Photo guide</b> (it also pops up the first time). Face the camera straight, keep both shoulders in the frame, leave space above your head, pull hair off your forehead and ears, and stand in even light.</p><span class="tip">A good photo means accurate results</span></div></li>
+    <li class="rv"><span class="n">2</span><div><h4>Take or upload a photo</h4><p>Press <b>📷 Camera</b>, allow camera access, line yourself up with the dashed guide and tap <b>Capture</b>. Or press <b>🖼 Upload</b> and pick a photo from your gallery.</p><span class="tip">One person only, no hat</span></div></li>
+    <li class="rv"><span class="n">3</span><div><h4>Watch the face scan</h4><p>A scan line sweeps your photo while 468 points are mapped across your face. Measurement lines then show your cheeks, jaw, forehead and face length. This takes a few seconds.</p></div></li>
+    <li class="rv"><span class="n">4</span><div><h4>Check the photo check</h4><p>Six ticks confirm your head is straight, facing the camera, at the right distance, with shoulders visible, headroom and centred. If anything shows red, tap <b>↺ Retake photo</b> for better placement.</p></div></li>
+    <li class="rv"><span class="n">5</span><div><h4>Read your face analysis</h4><p>You get your face shape (oval, round, square, heart or oblong), jawline width, forehead width and length-to-width ratio. These decide which styles are suggested for you.</p></div></li>
+    <li class="rv"><span class="n">6</span><div><h4>Pick a hairstyle</h4><p>Tap one of the <b>Best for you</b> chips, or browse all 381 styles below the photo. Filter by category, search by name, and press <b>Show more</b> to see more. Tapping a style starts the AI.</p><span class="tip">Try a few, results are saved per style</span></div></li>
+    <li class="rv"><span class="n">7</span><div><h4>Choose a hair colour</h4><p>Pick any of the 16 swatches under <b>Hair colour</b>, from natural browns to rose pink and ice blue. Changing the colour re-generates your current style after a short pause.</p></div></li>
+    <li class="rv"><span class="n">8</span><div><h4>Wait for the AI, then compare</h4><p>The AI restyles your real photo in about 15 to 30 seconds while a shimmer plays. When it appears, <b>press and hold the image</b> to flip back to your original and see the difference.</p></div></li>
+    <li class="rv"><span class="n">9</span><div><h4>See every angle and save</h4><p>Use the <b>Front · Left · Right</b> tabs above the photo. Each side view takes another 15 to 30 seconds the first time. Press <b>🔄 Generate all views</b> to make both, then <b>⬇ Save preview</b> or <b>🧩 Save 3-view collage</b>.</p><span class="tip">Side views are AI estimates of the style</span></div></li>
+  </ol>
+  <h2 class="rv" style="font-size:1.6rem;margin:3rem 0 1rem">Tips &amp; troubleshooting</h2>
+  <div class="htips rv">
+    <details><summary>How can I test styles instantly?</summary><p>Tick <b>⚡ Quick preview</b> in the panel. Styles are drawn on your face right away with no AI, so it is fast but rough. Untick it to get the real photo-realistic result.</p></details>
+    <details><summary>The result doesn't look like me</summary><p>Retake your photo in brighter, even light, facing straight with hair off your face. A new photo gives a fresh result. Glasses and facial hair are kept, and very busy backgrounds can confuse the AI.</p></details>
+    <details><summary>I see an error message</summary><p>The message at the bottom-left of the photo says what went wrong. If it mentions the server or AI being unavailable, wait a minute and tap the style again. You will still get the quick preview in the meantime.</p></details>
+    <details><summary>How accurate are the left and right views?</summary><p>Your photo only shows the front, so the AI estimates the sides using your face and your new hairstyle. Treat them as a preview of the style, not an exact copy of how your hair will fall.</p></details>
+    <details><summary>Are my photos stored?</summary><p>Your photo is sent to an AI service only to create the preview. This site does not save your photos or your results.</p></details>
+  </div>
+  <a class="btn" href="#try">Start your first scan →</a>
+</section>
+<div class="modal" id="proto" hidden><div class="card2"><h2>Photo protocol</h2><p class="mute">Follow these so the hair lands exactly on your head.</p>
+<ol><li><b>Face the camera straight.</b> Chin level, head not tilted or turned.</li><li><b>Show head and both shoulders.</b> Hold the phone at eye level, arm's length away.</li><li><b>Leave space above your head.</b> Don't crop the top of your hair.</li><li><b>Hair off your forehead and ears.</b> No hats or headbands.</li><li><b>Even light on your face.</b> Face a window or lamp; avoid harsh shadows.</li><li><b>Neutral expression, one person only.</b></li></ol>
+<button class="btn" id="ok">Got it, continue →</button></div></div>
+<script src="js/styles-data.js"></script>
+<script src="js/hair.js"></script>
+<script src="js/app.js"></script>
+<script src="js/ai.js"></script>
+</body></html>

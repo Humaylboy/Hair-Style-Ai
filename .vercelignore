@@ -1,0 +1,6 @@
+.env
+server.py
+start.bat
+start.sh
+README.txt
+__pycache__
