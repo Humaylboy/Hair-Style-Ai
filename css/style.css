@@ -75,3 +75,29 @@ h1 span:nth-child(2) em{animation-delay:.15s}h1 span:nth-child(3) em{animation-d
 .htips{display:grid;gap:.6rem;margin-bottom:2.2rem}
 .htips details{border:1px solid #fff2;border-radius:18px;background:var(--glass);padding:1rem 1.3rem}.htips summary{cursor:pointer;font-weight:600}.htips details p{color:var(--mute);margin-top:.6rem}.htips b{color:var(--fg)}
 @media(max-width:600px){.hsteps li{grid-template-columns:1fr}}
+
+/* Fix hero heading and subtitle overlap */
+.hero h1 {
+    display: block;
+    line-height: 1.05;
+    margin-bottom: 25px;
+}
+
+.hero h1 span {
+    display: block;
+}
+
+.hero h1 em {
+    display: inline-block;
+    font-style: normal;
+}
+
+.hero .sub {
+    display: block;
+    position: relative;
+    line-height: 1.7;
+    margin-top: 20px;
+    margin-bottom: 30px;
+    max-width: 550px;
+    clear: both;
+}
